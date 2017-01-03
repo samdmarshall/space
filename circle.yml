@@ -1,0 +1,5 @@
+machine:
+  python:
+    version: 3.6.0
+  ruby:
+    version: 2.2.4
