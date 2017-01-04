@@ -46,6 +46,6 @@ setup(
     },
     zip_safe = False,
     install_requires = [
-        'pyparsing >= 2.0.1',
+        'PyYAML >= 3',
     ]
 )
