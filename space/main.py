@@ -28,10 +28,12 @@
 # OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
 # OF THE POSSIBILITY OF SUCH DAMAGE.
 
+import os
 import argparse
 from .version           import __version__ as SPACE_VERSION
 from .Logger            import Logger
 from .                  import Settings
+from .                  import Executor
 
 # Main
 def main():
@@ -73,6 +75,12 @@ def main():
         default=False,
         action='store_true',
     )
+    parser.add_argument(
+        '--edit',
+        help='Opens the space.yml file in your EDITOR',
+        default=False,
+        action='store_true',
+    )
 
     initial_arguments, remaining_args = parser.parse_known_args()
 
@@ -83,24 +91,30 @@ def main():
     Logger.isSilent(initial_arguments.quiet)
 
     configuration = Settings.Configuration()
-    if configuration.is_valid() is False:
-        parser.exit(1, 'invalid configuration file!\n')
+    
+    if initial_arguments.edit is True:
+        if os.environ.get('EDITOR') is None:
+            Logger.write().critical('The value of EDITOR is not set, defaulting to nano...')
+        Executor.Invoke((os.environ.get('EDITOR', 'nano'), configuration.get_preferences_path()))
+    else:
+        if configuration.is_valid() is False:
+            parser.exit(1, 'invalid configuration file!\n')
 
-    if initial_arguments.list is True:
-        message = '%s [-h] {%s}\n' % (parser.prog, '|'.join(configuration.commands()))
-        parser.exit(0, message)
+        if initial_arguments.list is True:
+            message = '%s [-h] {%s}\n' % (parser.prog, '|'.join(configuration.commands()))
+            parser.exit(0, message)
     
 
-    subparsers = parser.add_subparsers(title='Subcommands', dest='command')
-    subparsers.required = True
+        subparsers = parser.add_subparsers(title='Subcommands', dest='command')
+        subparsers.required = True
 
-    for command_name in configuration.commands():
-        command_subparser = subparsers.add_parser(command_name)
+        for command_name in configuration.commands():
+            command_subparser = subparsers.add_parser(command_name)
     
-    command_args = parser.parse_args(remaining_args)
+        command_args = parser.parse_args(remaining_args)
 
-    if configuration.invoke(command_args.command) is False:
-        parser.exit(1, 'unknown command\n')
+        if configuration.invoke(command_args.command) is False:
+            parser.exit(1, 'unknown command\n')
 
 if __name__ == "__main__": # pragma: no cover
     main()

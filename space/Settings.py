@@ -54,8 +54,11 @@ class Configuration(object):
             self.__prefs_data = yaml.safe_load(prefs_raw_data)
         except yaml.YAMLError as exc:
             print('Error in configuration file:', exc)
-        if self.__prefs_data is None:
+        if self.__prefs_data is None and prefs_raw_data:
             print('unable to load configuration file! valid yaml file required')
+
+    def get_preferences_path(self):
+        return self.__prefs_path
 
     def is_valid(self):
         working_path = os.path.abspath(os.curdir)
