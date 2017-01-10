@@ -19,7 +19,7 @@ this file should be configured as such:
 ```
 ~/path/some/folder/:
   action:
-    - echo "hello, wold!"
+    - echo "hello, world!"
 ```
 
 and if you `cd` to `~/path/some/folder/` then run `space action` you will see `hello, world!` get printed to the command line.
