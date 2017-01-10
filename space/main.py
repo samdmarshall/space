@@ -81,6 +81,12 @@ def main():
         default=False,
         action='store_true',
     )
+    parser.add_argument(
+        '--env',
+        help='Passes values into the environment you are working in',
+        action='store',
+        default='',
+    )
 
     initial_arguments, remaining_args = parser.parse_known_args()
 
@@ -123,7 +129,7 @@ def main():
         command_args = parser.parse_args(remaining_args)
 
         Logger.write().info('Running subcommand...')
-        if configuration.invoke(command_args.command) is False:
+        if configuration.invoke(initial_arguments.env, command_args.command) is False:
             Logger.write().error('Unknown command "%s" was encountered!' % command_args.command)
             parser.exit(1, '')
 

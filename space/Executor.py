@@ -29,6 +29,7 @@
 # OF THE POSSIBILITY OF SUCH DAMAGE.
 
 import sys
+import tempfile
 import subprocess
 
 try:
@@ -46,3 +47,16 @@ def Invoke(call_args, shell_state=False):
         output = exception.output.decode(sys.stdout.encoding)
         error = exception.returncode
     return (output, error)
+
+def Subshell(env_list,action_list):
+    script = '#!/bin/sh \n'
+    for env_var in env_list:
+        script += env_var + '\n'
+    for action in action_list:
+        script += action + '\n'
+    script_file = tempfile.NamedTemporaryFile('wt')
+    script_file.write(script)
+    script_file.flush()
+    proc = subprocess.Popen(['/bin/bash', script_file.name], stdin=subprocess.PIPE, stdout=subprocess.PIPE)
+    stdout, errors = proc.communicate()
+    return stdout, errors;

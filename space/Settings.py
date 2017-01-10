@@ -82,16 +82,13 @@ class Configuration(object):
             self.__comands = {}
         return list(self.__commands.keys())
 
-    def invoke(self, command):
+    def invoke(self, environment, command):
         found_command = command in self.__commands.keys()
         if found_command is True:
+            environment_commands = environment.split(';')
             exec_commands = [cmd for cmd in self.__commands[command] if cmd is not None]
-            for exec_line in exec_commands:
-                output, error = Executor.Invoke(shlex.split(exec_line))
-                if error:
-                    print(error)
-                    break
-                sys.stdout.write(output)
-                sys.stdout.flush()
+            output, _ = Executor.Subshell(environment_commands, exec_commands)
+            sys.stdout.buffer.write(output)
+            sys.stdout.flush()
         return found_command
             
