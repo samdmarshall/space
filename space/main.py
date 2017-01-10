@@ -102,8 +102,8 @@ def main():
     else:
         Logger.write().info('Validating configuration file...')
         if configuration.is_valid() is False:
-            Logger.write().error('Error, invalid configuration file!')
-            parser.exit(1, 'invalid configuration file!\n')
+            Logger.write().warning('No configuration setup for this directory!')
+            parser.exit(1, '')
 
         Logger.write().info('Checking arguments...')
         if initial_arguments.list is True:
@@ -125,7 +125,7 @@ def main():
         Logger.write().info('Running subcommand...')
         if configuration.invoke(command_args.command) is False:
             Logger.write().error('Unknown command "%s" was encountered!' % command_args.command)
-            parser.exit(1, 'unknown command\n')
+            parser.exit(1, '')
 
 if __name__ == "__main__": # pragma: no cover
     main()

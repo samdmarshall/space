@@ -1,2 +1,2 @@
 remote_origin = 'git@github.com:samdmarshall/space.git'
-commit_hash = 'c1aca07'
+commit_hash = '9c6a902'
