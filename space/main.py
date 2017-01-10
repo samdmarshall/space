@@ -90,30 +90,41 @@ def main():
     Logger.isVerbose(initial_arguments.verbose)
     Logger.isSilent(initial_arguments.quiet)
 
+    Logger.write().info('Loading the configuration for space...')
     configuration = Settings.Configuration()
     
     if initial_arguments.edit is True:
+        Logger.write().info('Launching in editor mode...')
         if os.environ.get('EDITOR') is None:
             Logger.write().critical('The value of EDITOR is not set, defaulting to nano...')
+        Logger.write().info('Opening the spaces.yml file in the default editor...')
         Executor.Invoke((os.environ.get('EDITOR', 'nano'), configuration.get_preferences_path()))
     else:
+        Logger.write().info('Validating configuration file...')
         if configuration.is_valid() is False:
+            Logger.write().error('Error, invalid configuration file!')
             parser.exit(1, 'invalid configuration file!\n')
 
+        Logger.write().info('Checking arguments...')
         if initial_arguments.list is True:
             message = '%s [-h] {%s}\n' % (parser.prog, '|'.join(configuration.commands()))
             parser.exit(0, message)
     
-
+        Logger.write().info('Creating subcommand parser...')
         subparsers = parser.add_subparsers(title='Subcommands', dest='command')
         subparsers.required = True
 
+        Logger.write().info('Adding subcommands to command line parser...')
         for command_name in configuration.commands():
+            Logger.write().debug('Adding command "%s"...' % command_name)
             command_subparser = subparsers.add_parser(command_name)
-    
+
+        Logger.write().info('Parsing remaining command line arguments...')
         command_args = parser.parse_args(remaining_args)
 
+        Logger.write().info('Running subcommand...')
         if configuration.invoke(command_args.command) is False:
+            Logger.write().error('Unknown command "%s" was encountered!' % command_args.command)
             parser.exit(1, 'unknown command\n')
 
 if __name__ == "__main__": # pragma: no cover
